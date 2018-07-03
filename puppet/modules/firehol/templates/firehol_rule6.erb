@@ -1,0 +1,2 @@
+    # Rule '<%= @rule_name %>', IPv6
+    <%= @direction %>6 "<%= @all_services.join(' ') %>" <%= @action %> <% if @src %>src6 <%= @src6 %> <% end %> <% if @dst6 %> dst <%= @dst6 %> <% end %>

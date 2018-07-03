@@ -1,0 +1,16 @@
+{
+  "name": "beryju-firehol",
+  "version": "0.1.0",
+  "author": "beryju",
+  "summary": "Install and Manage FireHOL",
+  "license": "GPL-3.0",
+  "source": "https://github.com/BeryJu-org/puppet-firehol.git",
+  "project_page": "https://github.com/BeryJu-org/puppet-firehol",
+  "issues_url": "https://github.com/BeryJu-org/puppet-firehol/issues",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"},
+    {"name":"puppetlabs-concat","version_requirement":">= 2.2.0"}
+  ],
+  "data_provider": null
+}
+

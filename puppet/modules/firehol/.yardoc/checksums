@@ -1,0 +1,5 @@
+manifests/init.pp 3bd0946e79c0a20cbaa45f75a5c206d94af45bbb
+manifests/rule.pp 03eeab8f6b0e7015c6d81887066636cfa5c38820
+manifests/package.pp 3144791577ea683311ccc0bd447f6c3be0bf5178
+manifests/service.pp b91c56c5ffe3ada7240095d645518e47ec22dd85
+manifests/interface.pp b7193aea93a41cb31dd2dfa80d6d12d65470da11

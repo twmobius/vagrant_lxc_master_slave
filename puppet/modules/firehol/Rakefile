@@ -1,0 +1,15 @@
+require 'rake'
+require 'puppet-syntax/tasks/puppet-syntax'
+require 'puppet-lint/tasks/puppet-lint'
+require 'puppet-strings/tasks/generate'
+
+# disable this because we clone into `puppet-beryjuorg`
+PuppetLint.configuration.send('disable_autoloader_layout')
+# sigh
+PuppetLint.configuration.send('disable_140chars')
+
+task :default => [
+  Rake::Task['syntax'],
+  Rake::Task['lint'],
+  Rake::Task['strings:generate']
+]
