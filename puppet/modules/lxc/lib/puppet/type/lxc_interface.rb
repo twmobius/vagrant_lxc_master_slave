@@ -52,7 +52,7 @@ Puppet::Type.newtype(:lxc_interface) do
     desc 'Network type'
     defaultto 'veth'
     validate do |value|
-      unless ['veth', 'vlan', 'macvlan', 'phys'].include?value
+      unless ['none', 'veth', 'vlan', 'macvlan', 'phys'].include?value
         raise ArgumentError, 'Invalid network type'
       end
 
