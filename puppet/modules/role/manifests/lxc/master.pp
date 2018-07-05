@@ -1,6 +1,6 @@
-class role::lxc::master {
-
+class role::lxc::master (
     $private_interface = 'enp0s8' # TODO: Actually find this
+) {
 
     class { 'netplan':
         config_file   => '/etc/netplan/01-custom.yaml',

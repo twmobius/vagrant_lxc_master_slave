@@ -1,24 +1,38 @@
 class role::lxc::slave(
     $master,
+    $private_interface = 'enp0s8' # TODO: Actually find this
 ){
+    class { 'netplan':
+        config_file   => '/etc/netplan/01-custom.yaml',
+        ethernets     => {
+            $private_interface => {
+                'dhcp4' => false,
+            },
+        },
+        bridges       => {
+            'br0' => {
+                'addresses'  => ['10.1.1.2/24'],
+                'interfaces' => [$private_interface], # TODO: Find the correct interface for
+            },
+        },
+        netplan_apply => true,
+    }
+
     class { 'rsync::server':
         use_xinetd => false,
     }
-
     rsync::get { 'lxc':
         source => "rsync://${master}/lxc/",
     }
 
     class { 'lxc':
+        lxc_networking_device_link    => 'br0',
         lxc_networking_type           => 'veth',
-        lxc_networking_nat_enable     => false,
         lxc_networking_flags          => 'up',
-        lxc_networking_nat_bridge     => 'lxcbr0',
-        lxc_networking_nat_address    => '10.1.1.2',
-        lxc_networking_nat_mask       => '255.255.255.0',
-        lxc_networking_nat_network    => '10.1.1.0/24',
+        lxc_networking_nat_enable     => false,
         lxc_cgmanager_service_ensure  => false,
         lxc_cgmanager_service_enabled => false,
+        require                       => Class['netplan'],
     }
 
     $lxc_defaults = {
@@ -51,7 +65,7 @@ class role::lxc::slave(
         device_name => 'eth0',
         ensure      => present,
         index       => 0,
-        link        => 'lxcbr0',
+        link        => 'br0',
         type        => 'veth',
         restart     => true,
     }
