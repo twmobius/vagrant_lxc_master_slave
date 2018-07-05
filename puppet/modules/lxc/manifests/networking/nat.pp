@@ -33,7 +33,7 @@ class lxc::networking::nat inherits lxc::params {
   $local_lxc_networking_nat_dns_domain = $lxc::lxc_networking_nat_dns_domain
 
   file { $lxc::params::network_nat_conf:
-    ensure  => $nat_ensure,
+    ensure  => present,
     content => template("${module_name}/config/lxc-net.erb"),
     notify  => Service[$lxc::params::network_nat_service],
   }
