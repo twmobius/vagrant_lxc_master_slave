@@ -14,9 +14,9 @@ class lxc::params {
   case $::operatingsystem {
     'Ubuntu': {
       case $::lsbdistcodename {
-        'trusty': {
+        'bionic': {
           $lxc_ruby_bindings_gem_deps = [
-            'build-essential', 'ruby-dev', 'lxc-dev', 'libcgmanager0'
+            'build-essential', 'ruby-dev', 'lxc-dev',
           ]
         }
         default: {
@@ -31,8 +31,9 @@ class lxc::params {
 
   $lxc_ruby_bindings_provider        = gem
   $lxc_ruby_bindings_package         = 'ruby-lxc'
-  $lxc_ruby_bindings_version         = '1.2.0'
+  $lxc_ruby_bindings_version         = '1.2.3'
   $lxc_lxc_package                   = 'lxc'
+  $lxc_lxc_package_templates         = 'lxc-templates'
   $lxc_lxc_version                   = latest
   $lxc_lxc_service                   = 'lxc'
   $lxc_lxc_service_ensure            = running
