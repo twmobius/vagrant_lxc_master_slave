@@ -32,6 +32,7 @@ class role::lxc::master {
         lxc_networking_nat_enable     => false,
         lxc_cgmanager_service_ensure  => false,
         lxc_cgmanager_service_enabled => false,
+        require                       => Class['netplan'],
     }
 
     $lxc_defaults = {
