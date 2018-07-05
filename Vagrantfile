@@ -17,6 +17,7 @@ Vagrant.configure("2") do |config|
         host.vm.provision "puppet" do |puppet|
           puppet.module_path = "puppet/modules"
           puppet.manifests_path = "puppet/manifests"
+          puppet.options = "--verbose --debug"
         end
       end
       config.vm.provider "virtualbox" do |v|

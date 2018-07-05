@@ -14,7 +14,7 @@ Puppet::Type.type(:lxc_interface).provide(:interface) do
       @container.set_config_item("lxc.net.#{@resource[:index]}.veth.pair", @resource[:veth_name_host]) unless @resource[:veth_name_host].nil?
       @container.set_config_item("lxc.net.#{@resource[:index]}.vlan_id", @resource[:vlan_id]) unless @resource[:vlan_id].nil?
       @container.set_config_item("lxc.net.#{@resource[:index]}.macvlan_mode", @resource[:macvlan_mode]) unless @resource[:macvlan_mode].nil?
-      @container.set_config_item("lxc.net.#{@resource[:index]}.ipv4", @resource[:ipv4].flatten) unless @resource[:ipv4].nil?
+      @container.set_config_item("lxc.net.#{@resource[:index]}.ipv4.address", @resource[:ipv4].flatten) unless @resource[:ipv4].nil?
       @container.set_config_item("lxc.net.#{@resource[:index]}.hwaddr", @resource[:hwaddr]) unless @resource[:hwaddr].nil?
       @container.save_config
       restart if @resource[:restart]
@@ -225,7 +225,7 @@ Puppet::Type.type(:lxc_interface).provide(:interface) do
         aux = ips.select { |b| b =~ /lxc.net.ipv4 =/ }
         aux.collect { |m| m.split('=').last.strip }
       else
-        @container.config_item("lxc.net.#{@resource[:index]}.ipv4").first
+        @container.config_item("lxc.net.#{@resource[:index]}.ipv4.address").first
       end
     rescue StandardError
       # TODO: might be better to fail here instead of returning empty string which
@@ -237,9 +237,9 @@ Puppet::Type.type(:lxc_interface).provide(:interface) do
   def ipv4=(value)
     begin
       define_container
-      @container.clear_config_item("lxc.net.#{@resource[:index]}.ipv4")
+      @container.clear_config_item("lxc.net.#{@resource[:index]}.ipv4.address")
       # Why does it get an arrays of arrays?
-      @container.set_config_item("lxc.net.#{@resource[:index]}.ipv4",value.flatten)
+      @container.set_config_item("lxc.net.#{@resource[:index]}.ipv4.address",value.flatten)
       @container.save_config
       restart if @resource[:restart]
       true
