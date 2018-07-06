@@ -20,7 +20,7 @@ class firehol (
     notify  => Service['firehol'],
   }
 
-  concat::fragment { 'header':
+  concat::fragment { 'firehol-header':
     require => Package['firehol'],
     target  => $config_file,
     content => template('firehol/firehol_header.erb'),
