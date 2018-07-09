@@ -1,6 +1,7 @@
 class role::lxc::master (
     $public_interface = 'enp0s3', # TODO actually find this
-    $private_interface = 'enp0s8' # TODO Actually find this
+    $private_interface = 'enp0s8', # TODO Actually find this
+    $lxc_bridge = 'br0',
 ){
 
     class { 'netplan':
@@ -11,7 +12,7 @@ class role::lxc::master (
             },
         },
         bridges       => {
-            'br0' => {
+            $lxc_bridge => {
                 'addresses'  => ['10.1.1.1/24'],
                 'interfaces' => [$private_interface], # TODO: Find the correct interface for
             },
@@ -42,7 +43,7 @@ class role::lxc::master (
     }
 
     class { 'lxc':
-        lxc_networking_device_link    => 'br0',
+        lxc_networking_device_link    => $lxc_bridge,
         lxc_networking_type           => 'veth',
         lxc_networking_flags          => 'up',
         lxc_networking_nat_enable     => false,
@@ -80,7 +81,7 @@ class role::lxc::master (
         device_name => 'eth0',
         ensure      => present,
         index       => 0,
-        link        => 'br0',
+        link        => $lxc_bridge,
         type        => 'veth',
         restart     => true,
     }
