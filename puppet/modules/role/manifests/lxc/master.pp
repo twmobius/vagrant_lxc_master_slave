@@ -30,10 +30,17 @@ class role::lxc::master (
     firehol::service { 'mysql': server => 'tcp/3306', }
     firehol::service { 'mail': server => 'tcp/25,110,143,993,995', }
     firehol::service { 'web': server => 'tcp/80,443', }
+    firehol::service { 'dns': server => 'tcp/53,udp/53', }
+    firehol::service { 'openvpn': server => 'tcp/1194,udp/1194', }
+    firehol::service { 'icmp': server => 'icmp', }
 
-    firehol::rule { 'basic-accept':
+    firehol::rule { 'public-accept':
         interface => $public_interface,
-        service   => ['mail', 'ssh', 'web'],
+        service   => ['icmp', 'mail', 'ssh', 'web', 'openvpn'],
+    }
+    firehol::rule { 'bridge-accept':
+        interface => $lxc_bridge,
+        service   => ['icmp', 'mail', 'ssh', 'web'],
     }
 
     class { 'rsync::server':
