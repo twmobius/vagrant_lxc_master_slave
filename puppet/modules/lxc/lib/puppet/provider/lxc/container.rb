@@ -14,6 +14,7 @@ Puppet::Type.type(:lxc).provide(:container) do
       @container.set_config_item('lxc.start.delay',@resource[:autostart_delay]) if not @resource[:autostart_delay].nil?
       @container.set_config_item('lxc.start.order',@resource[:autostart_order]) if not @resource[:autostart_order].nil?
       @container.set_config_item('lxc.group',@resource[:groups]) if @resource[:groups].kind_of?Array
+      @container.set_config_item('lxc.idmap',@resource[:idmap]) if @resource[:idmap].kind_of?Array
     rescue LXC::Error => e
       fail("Failed to create #{@resource[:name]}: #{e.message}")
     end
@@ -198,6 +199,26 @@ Puppet::Type.type(:lxc).provide(:container) do
     begin
       define_container
       @container.set_config_item('lxc.group',value)
+      @container.save_config
+      true
+    rescue LXC::Error
+      false
+    end
+  end
+
+  def idmap
+    begin
+      define_container
+      @container.config_item('lxc.idmap')
+    rescue LXC::Error
+      ""
+    end
+  end
+
+  def idmap=(value)
+    begin
+      define_container
+      @container.set_config_item('lxc.idmap',value)
       @container.save_config
       true
     rescue LXC::Error
