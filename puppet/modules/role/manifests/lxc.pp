@@ -93,25 +93,6 @@ class role::lxc (
     class { 'rsync::server':
         use_xinetd => false,
     }
-    # Rsync configuration, dependent on master/slave
-    if $master {
-        rsync::server::module { 'lxc':
-            path => $lxc_path,
-            uid  => 0,
-            gid  => 0,
-        }
-    } elsif $rsync_master {
-        rsync::get { 'lxc':
-            source => "rsync://${rsync_master}/lxc/",
-            path   => $lxc_path,
-        }
-        cron { 'rsync-lxc':
-            command => "/usr/bin/rsync rsync://${rsync_master}/lxc/ ${lxc_path} >/dev/null 2>&1",
-            user    => 'root',
-            minute  => '*/10',
-        }
-    } # Otherwise we are neither master, nor slave
-
     # LXC configuration, dependent on master/slave
     class { 'lxc':
         lxc_networking_device_link    => $lxc_bridge,
@@ -191,4 +172,31 @@ class role::lxc (
         }
         create_resources(lxc_interface, $lxc_interfaces, $lxc_interface_defaults)
     }
+
+    # To be excluded because they are started on the slave
+    # Rsync configuration, dependent on master/slave
+    if $master {
+        rsync::server::module { 'lxc':
+            path => $lxc_path,
+            uid  => 0,
+            gid  => 0,
+        }
+    } elsif $rsync_master {
+        $t = $lxcs.filter |$k, $v| { $v['state'] == 'running' }
+        $excluded = $t.map |$k, $v| { "${lxc_path}/${k}" }
+        rsync::get { 'lxc':
+            source  => "rsync://${rsync_master}/lxc/",
+            purge   => true,
+            exclude => $excluded,
+            path    => $lxc_path,
+        }
+        $t2 = $excluded.map |$value| { "--exclude ${value}" }
+        $cron_excluded = join($t2, ' ')
+        cron { 'rsync-lxc':
+            command => "/usr/bin/rsync -axHAX --delete ${cron_excluded} rsync://${rsync_master}/lxc/ ${lxc_path} >/dev/null 2>&1",
+            user    => 'root',
+            minute  => '*/10',
+        }
+    } # Otherwise we are neither master, nor slave
+
 }
