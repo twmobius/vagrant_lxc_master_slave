@@ -1,3 +1,4 @@
+# Class lxc::master
 class role::lxc::master (
     $public_interface = 'enp0s3', # TODO actually find this
     $private_interface = 'enp0s8', # TODO Actually find this
@@ -24,7 +25,7 @@ class role::lxc::master (
         ensure => true,
     }
     firehol::interface { $public_interface: interface_name => 'public', }
-    firehol::interface { $private_interface: interface_name => 'private', }
+    firehol::interface { $lxc_bridge: interface_name => 'private', }
     firehol::service { 'ssh': server => 'tcp/22', }
     firehol::service { 'mysql': server => 'tcp/3306', }
     firehol::service { 'mail': server => 'tcp/25,110,143,993,995', }
