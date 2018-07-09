@@ -26,13 +26,16 @@ class role::lxc::master (
     }
     firehol::interface { $public_interface: interface_name => 'public', }
     firehol::interface { $lxc_bridge: interface_name => 'private', }
+    firehol::router { 'lxc_router':
+        inface  => $lxc_bridge,
+        outface => $public_interface,
+    }
     firehol::service { 'ssh': server => 'tcp/22', }
     firehol::service { 'mysql': server => 'tcp/3306', }
     firehol::service { 'mail': server => 'tcp/25,110,143,993,995', }
     firehol::service { 'web': server => 'tcp/80,443', }
     firehol::service { 'dns': server => 'tcp/53,udp/53', }
     firehol::service { 'openvpn': server => 'tcp/1194,udp/1194', }
-    firehol::service { 'icmp': server => 'icmp', }
     firehol::service { 'ftp': server => 'tcp/21', }
 
     firehol::rule { 'public-server':
@@ -53,6 +56,18 @@ class role::lxc::master (
     firehol::rule { 'bridge-client':
         interface => $lxc_bridge,
         direction => 'client',
+        service   => 'all',
+    }
+    firehol::router_rule { 'masquerade':
+        router    => 'lxc_router',
+        direction => '',
+        action    => 'masquerade',
+        service   => '',
+    }
+    firehol::router_rule { 'route_all':
+        router    => 'lxc_router',
+        direction => 'route',
+        action    => 'accept',
         service   => 'all',
     }
 
