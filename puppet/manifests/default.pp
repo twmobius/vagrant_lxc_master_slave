@@ -6,6 +6,7 @@ if $facts['hostname'] == 'lxc1' {
         bridge_ip         => '10.1.1.1',
         bridge_netmask    => '24',
         master            => true,
+        rsync_allow       => '10.1.1.2',
     }
 }
 if $facts['hostname'] == 'lxc2' {
@@ -17,5 +18,6 @@ if $facts['hostname'] == 'lxc2' {
         bridge_netmask    => '24',
         master            => false,
         rsync_master      => '10.1.1.1',
+        rsync_allow       => '10.1.1.1',
     }
 }

@@ -8,6 +8,7 @@ class role::lxc (
     $lxc_path = '/var/lib/lxc',
     $master = false,
     $rsync_master = undef,
+    $rsync_allow = undef,
 ){
 
     # Network configuration
@@ -44,6 +45,7 @@ class role::lxc (
     firehol::service { 'dns': server => 'tcp/53,udp/53', }
     firehol::service { 'openvpn': server => 'tcp/1194,udp/1194', }
     firehol::service { 'ftp': server => 'tcp/21', }
+    firehol::service { 'rsync': server => 'tcp/873', }
 
     firehol::rule { 'public-server':
         interface => $public_interface,
@@ -76,6 +78,15 @@ class role::lxc (
         direction => 'route',
         action    => 'accept',
         service   => 'all',
+    }
+
+    if $rsync_allow {
+        firehol::rule { 'rsync-allow':
+            interface => $lxc_bridge,
+            direction => 'server',
+            service   => 'rsync',
+            src       => $rsync_allow,
+        }
     }
 
 
