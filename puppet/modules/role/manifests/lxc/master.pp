@@ -34,13 +34,25 @@ class role::lxc::master (
     firehol::service { 'openvpn': server => 'tcp/1194,udp/1194', }
     firehol::service { 'icmp': server => 'icmp', }
 
-    firehol::rule { 'public-accept':
+    firehol::rule { 'public-server':
         interface => $public_interface,
+        direction => 'server',
         service   => ['icmp', 'mail', 'ssh', 'web', 'openvpn'],
     }
-    firehol::rule { 'bridge-accept':
+    firehol::rule { 'public-client':
+        interface => $public_interface,
+        direction => 'client',
+        service   => 'all',
+    }
+    firehol::rule { 'bridge-server':
         interface => $lxc_bridge,
+        direction => 'server',
         service   => ['icmp', 'mail', 'ssh', 'web'],
+    }
+    firehol::rule { 'bridge-client':
+        interface => $lxc_bridge,
+        direction => 'client',
+        service   => 'all',
     }
 
     class { 'rsync::server':
