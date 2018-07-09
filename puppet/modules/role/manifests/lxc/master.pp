@@ -1,8 +1,10 @@
 # Class lxc::master
 class role::lxc::master (
-    $public_interface = 'enp0s3', # TODO actually find this
-    $private_interface = 'enp0s8', # TODO Actually find this
+    $public_interface = 'enp0s3',
+    $private_interface = 'enp0s8',
     $lxc_bridge = 'br0',
+    $bridge_ip = '10.1.1.1',
+    $bridge_netmask = '24',
 ){
 
     class { 'netplan':
@@ -14,8 +16,8 @@ class role::lxc::master (
         },
         bridges       => {
             $lxc_bridge => {
-                'addresses'  => ['10.1.1.1/24'],
-                'interfaces' => [$private_interface], # TODO: Find the correct interface for
+                'addresses'  => ["${bridge_ip}/${bridge_netmask}"],
+                'interfaces' => [$private_interface],
             },
         },
         netplan_apply => true,
@@ -114,12 +116,13 @@ class role::lxc::master (
     create_resources(lxc, $lxcs, $lxc_defaults)
 
     $lxc_interface_defaults = {
-        device_name => 'eth0',
-        ensure      => present,
-        index       => 0,
-        link        => $lxc_bridge,
-        type        => 'veth',
-        restart     => true,
+        device_name  => 'eth0',
+        ipv4_gateway => $bridge_ip,
+        ensure       => present,
+        index        => 0,
+        link         => $lxc_bridge,
+        type         => 'veth',
+        restart      => true,
     }
     $lxc_interfaces = {
         'db-1' => { container => 'db-1', ipv4 => ['10.1.1.10/24'], },
