@@ -105,6 +105,11 @@ class role::lxc (
             source => "rsync://${rsync_master}/lxc/",
             path   => $lxc_path,
         }
+        cron { 'rsync-lxc':
+            command => "/usr/bin/rsync rsync://${rsync_master}/lxc/ ${lxc_path} >/dev/null 2>&1",
+            user    => 'root',
+            minute  => '*/10',
+        }
     } # Otherwise we are neither master, nor slave
 
     # LXC configuration, dependent on master/slave
