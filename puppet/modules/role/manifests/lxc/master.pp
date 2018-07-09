@@ -33,11 +33,12 @@ class role::lxc::master (
     firehol::service { 'dns': server => 'tcp/53,udp/53', }
     firehol::service { 'openvpn': server => 'tcp/1194,udp/1194', }
     firehol::service { 'icmp': server => 'icmp', }
+    firehol::service { 'ftp': server => 'tcp/21', }
 
     firehol::rule { 'public-server':
         interface => $public_interface,
         direction => 'server',
-        service   => ['icmp', 'mail', 'ssh', 'web', 'openvpn'],
+        service   => ['icmp', 'mail', 'ssh', 'web', 'openvpn', 'ftp'],
     }
     firehol::rule { 'public-client':
         interface => $public_interface,
