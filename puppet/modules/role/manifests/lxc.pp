@@ -97,6 +97,8 @@ class role::lxc (
     if $master {
         rsync::server::module { 'lxc':
             path => $lxc_path,
+            uid  => 0,
+            gid  => 0,
         }
     } elsif $rsync_master {
         rsync::get { 'lxc':
