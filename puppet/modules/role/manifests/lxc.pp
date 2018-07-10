@@ -133,22 +133,21 @@ class role::lxc (
     }
     $container_autostart = $master
     $lxcs = {
-        'db-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'db-2' => { state => $slave_container_state, autostart => !$container_autostart, },
-        'web-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'web-2' => { state => $slave_container_state, autostart => !$container_autostart, },
-        'ad-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'dns-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'queue-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'search-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'live-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'logs-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'vpn-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'mail-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'mc-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'various-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'redis-1' => { state => $master_container_state, autostart => $container_autostart, },
-        'zabbix-1' => { state => $master_container_state, autostart => $container_autostart, },
+        'db-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 100000 4999', 'g 0 100000 4999']], },
+        'db-2' => { state => $slave_container_state, autostart => !$container_autostart, idmap => [['u 0 105000 4999', 'g 0 105000 4999']], },
+        'web-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 110000 4999', 'g 0 110000 4999']], },
+        'web-2' => { state => $slave_container_state, autostart => !$container_autostart, idmap => [['u 0 115000 4999', 'g 0 110000 4999']], },
+        'adman' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 120000 4999', 'g 0 120000 4999']], },
+        'dns-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 125000 4999', 'g 0 120000 4999']], },
+        'queue-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 130000 4999', 'g 0 130000 4999']], },
+        'search-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 135000 4999', 'g 0 130000 4999']], },
+        'live-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 140000 4999', 'g 0 140000 4999']], },
+        #'logs-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 145000 4999', 'g 0 145000 4999']], },
+        'redis-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 150000 4999', 'g 0 150000 4999']], },
+        'vpn-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 155000 4999', 'g 0 155000 4999']], },
+        'mail-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 160000 4999', 'g 0 160000 4999']], },
+        'nginx-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 165000 4999', 'g 0 165000 4999']], },
+        #'zabbix-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 170000 4999', 'g 0 170000 4999']], },
     }
     create_resources(lxc, $lxcs, $lxc_defaults)
 
