@@ -167,7 +167,7 @@ class role::lxc (
             'db-2' => { container => 'db-2', ipv4 => ['10.1.1.11/24'], },
             'web-1' => { container => 'web-1', ipv4 => ['10.1.1.20/24'], },
             'web-2' => { container => 'web-2', ipv4 => ['10.1.1.21/24'], },
-            'adman' => { container => 'ad-1', ipv4 => ['10.1.1.30/24'], },
+            'adman' => { container => 'adman', ipv4 => ['10.1.1.30/24'], },
             'queue-1' => { container => 'queue-1', ipv4 => ['10.1.1.40/24'], },
             'search-1' => { container => 'search-1', ipv4 => ['10.1.1.50/24'], },
             'live-1' => { container => 'live-1', ipv4 => ['10.1.1.60/24'], },
@@ -176,7 +176,7 @@ class role::lxc (
             'dns-1' => { container => 'dns-1', ipv4 => ['10.1.1.90/24'], },
             'vpn-1'  => { container => 'vpn-1', type => 'none' }, # On the host namespace
             'mail-1' => { container => 'mail-1', type => 'none' }, # On the host namespace
-            'nginx-1' => { container => 'mail-1', type => 'none' }, # On the host namespace
+            'nginx-1' => { container => 'nginx-1', type => 'none' }, # On the host namespace
             # 'zabbix-1' => { container => 'redis-1', type => 'none' }, # On the host namespace
         }
         create_resources(lxc_interface, $lxc_interfaces, $lxc_interface_defaults)
