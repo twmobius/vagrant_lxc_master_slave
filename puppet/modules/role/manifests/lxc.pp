@@ -104,10 +104,21 @@ class role::lxc (
         require                       => Class['netplan'],
     }
 
+    file { $lxc_path:
+        mode    => 'o+x',
+        require => Class['lxc'],
+    }
+
     $lxc_defaults = {
         ensure          => 'present',
-        template        => 'ubuntu',
+        template        => 'download',
+        template_options => [
+            '--dist', 'ubuntu',
+            '--release', 'bionic',
+            '--arch', 'amd64',
+        ],
         storage_backend => 'dir',
+        idmap => [['u 0 100000 65536', 'g 0 100000 65536']],
     }
     # Run the containers on the master except a few that only run on the slave
     $master_container_state = $master ? {
