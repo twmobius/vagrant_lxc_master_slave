@@ -32,6 +32,31 @@ class role::lxc (
     class { 'firehol':
         ensure => true,
     }
+    firehol::dnat4 { 'http':
+        interface => $public_interface,
+        backend   => '10.1.1.20',
+        matches   => 'proto tcp dport "80 443"',
+    }
+    firehol::dnat4 { 'vpn-tcp':
+        interface => $public_interface,
+        backend   => '10.1.1.100',
+        matches   => 'proto tcp dport 1194',
+    }
+    firehol::dnat4 { 'vpn-udp':
+        interface => $public_interface,
+        backend   => '10.1.1.100',
+        matches   => 'proto udp dport 1194',
+    }
+    firehol::dnat4 { 'mail':
+        interface => $public_interface,
+        backend   => '10.1.1.110',
+        matches   => 'proto tcp dport "25 465 110 143 993 995 587"',
+    }
+    firehol::dnat4 { 'ftp':
+        interface => $public_interface,
+        backend   => '10.1.1.20',
+        matches   => 'proto tcp dport "20 21"',
+    }
     firehol::interface { $public_interface: interface_name => 'public', }
     firehol::interface { $lxc_bridge: interface_name => 'private', }
     firehol::router { 'lxc_router':
@@ -40,11 +65,11 @@ class role::lxc (
     }
     firehol::service { 'ssh': server => 'tcp/22,2222', }
     firehol::service { 'mysql': server => 'tcp/3306', }
-    firehol::service { 'mail': server => 'tcp/25,110,143,993,995', }
+    firehol::service { 'mail': server => 'tcp/25,465,110,143,993,995', }
     firehol::service { 'web': server => 'tcp/80,443', }
     firehol::service { 'dns': server => 'tcp/53,udp/53', }
     firehol::service { 'openvpn': server => 'tcp/1194,udp/1194', }
-    firehol::service { 'ftp': server => 'tcp/21', }
+    firehol::service { 'ftp': server => 'tcp/20,21', }
     firehol::service { 'rsync': server => 'tcp/873', }
 
     firehol::rule { 'public-server':
@@ -118,7 +143,6 @@ class role::lxc (
             '--arch', 'amd64',
         ],
         storage_backend => 'dir',
-        idmap => [['u 0 100000 65536', 'g 0 100000 65536']],
     }
     # Run the containers on the master except a few that only run on the slave
     $master_container_state = $master ? {
@@ -174,9 +198,9 @@ class role::lxc (
             #'logs-1' => { container => 'logs-1', ipv4 => ['10.1.1.70/24'], },
             'redis-1' => { container => 'redis-1', ipv4 => ['10.1.1.80/24'], },
             'dns-1' => { container => 'dns-1', ipv4 => ['10.1.1.90/24'], },
-            'vpn-1'  => { container => 'vpn-1', type => 'none' }, # On the host namespace
-            'mail-1' => { container => 'mail-1', type => 'none' }, # On the host namespace
-            'nginx-1' => { container => 'nginx-1', type => 'none' }, # On the host namespace
+            'vpn-1'  => { container => 'vpn-1', ipv4 => ['10.1.1.100/24'], },
+            'mail-1' => { container => 'mail-1', ipv4 => ['10.1.1.110/24'], },
+            'nginx-1' => { container => 'nginx-1', ipv4 => ['10.1.1.120/24'], },
             # 'zabbix-1' => { container => 'redis-1', type => 'none' }, # On the host namespace
         }
         create_resources(lxc_interface, $lxc_interfaces, $lxc_interface_defaults)
