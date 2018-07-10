@@ -218,6 +218,7 @@ Puppet::Type.type(:lxc).provide(:container) do
   def idmap=(value)
     begin
       define_container
+      @container.clear_config_item('lxc.idmap')
       @container.set_config_item('lxc.idmap',value)
       @container.save_config
       true
