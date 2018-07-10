@@ -38,7 +38,7 @@ class role::lxc (
         inface  => $lxc_bridge,
         outface => $public_interface,
     }
-    firehol::service { 'ssh': server => 'tcp/22', }
+    firehol::service { 'ssh': server => 'tcp/22,2222', }
     firehol::service { 'mysql': server => 'tcp/3306', }
     firehol::service { 'mail': server => 'tcp/25,110,143,993,995', }
     firehol::service { 'web': server => 'tcp/80,443', }
