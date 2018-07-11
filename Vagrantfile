@@ -18,6 +18,8 @@ Vagrant.configure("2") do |config|
           puppet.module_path = "puppet/modules"
           puppet.manifests_path = "puppet/manifests"
           puppet.options = "--verbose --debug"
+          puppet.hiera_config_path = "puppet/hiera.yaml"
+          puppet.working_directory = "/vagrant"
         end
       end
       config.vm.provider "virtualbox" do |v|
