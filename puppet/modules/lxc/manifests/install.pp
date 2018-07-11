@@ -36,19 +36,10 @@ class lxc::install inherits lxc::params {
     tag    => 'lxc_packages',
   }
 
-  file { '/var/tmp/ruby-lxc-1.2.3.gem':
-    ensure => 'present',
-    mode   => '0644',
-    owner  => 'root',
-    group  => 'root',
-    source => 'puppet:///modules/lxc/ruby-lxc-1.2.3.gem',
-  }
-
   package { 'lxc-bindings':
     ensure   => $lxc::lxc_ruby_bindings_version,
     name     => $lxc::lxc_ruby_bindings_package,
     provider => $lxc::lxc_ruby_bindings_provider,
-    source   => '/var/tmp/ruby-lxc-1.2.3.gem',
     require  => Package[$lxc::lxc_lxc_package, $lxc_ruby_bindings_deps],
   }
 }
