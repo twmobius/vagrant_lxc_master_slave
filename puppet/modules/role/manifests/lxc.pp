@@ -189,6 +189,14 @@ class role::lxc (
             }
         }
         create_resources(lxc, $lxc, $lxc_defaults)
+        file { "${lxc_path}/${key}/rootfs":
+            ensure  => directory,
+            owner   => $subuid,
+            group   => $subuid,
+            recurse => true,
+            ignore  => 'dev',
+            require => Lxc[$key],
+        }
         # Only define the interface of the lxcs on the respective host
         if ($master and $value['on_master']) or !$master and !$value['on_master'] {
             create_resources(lxc_interface, $lxc_interface, $lxc_interface_defaults)
