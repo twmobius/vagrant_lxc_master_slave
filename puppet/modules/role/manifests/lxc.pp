@@ -9,6 +9,8 @@ class role::lxc (
     $master = false,
     $rsync_master = undef,
     $rsync_allow = undef,
+    $subuid_step = 2000,
+    $subuid_start = 100000,
 ){
 
     # Network configuration
@@ -144,66 +146,53 @@ class role::lxc (
         ],
         storage_backend => 'dir',
     }
-    # Run the containers on the master except a few that only run on the slave
-    $master_container_state = $master ? {
-        true    => 'running',
-        false   => 'stopped',
-        default => 'stopped',
+    $lxc_interface_defaults = {
+        device_name  => 'eth0',
+        ensure       => present,
+        index        => 0,
+        link         => $lxc_bridge,
+        ipv4_gateway => $bridge_ip,
+        type         => 'veth',
+        restart      => false,
     }
-    $slave_container_state = $master ? {
-        false   => 'running',
-        true    => 'stopped',
-        default => 'stopped',
-    }
-    $container_autostart = $master
-    $lxcs = {
-        'db-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 100000 4999', 'g 0 100000 4999']], },
-        'db-2' => { state => $slave_container_state, autostart => !$container_autostart, idmap => [['u 0 105000 4999', 'g 0 105000 4999']], },
-        'web-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 110000 4999', 'g 0 110000 4999']], },
-        'web-2' => { state => $slave_container_state, autostart => !$container_autostart, idmap => [['u 0 115000 4999', 'g 0 115000 4999']], },
-        'adman' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 120000 4999', 'g 0 120000 4999']], },
-        'dns-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 125000 4999', 'g 0 125000 4999']], },
-        'queue-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 130000 4999', 'g 0 130000 4999']], },
-        'search-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 135000 4999', 'g 0 135000 4999']], },
-        'live-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 140000 4999', 'g 0 140000 4999']], },
-        'nginx-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 145000 4999', 'g 0 145000 4999']], },
-        'redis-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 150000 4999', 'g 0 150000 4999']], },
-        'vpn-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 155000 4999', 'g 0 155000 4999']], },
-        'mail-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 160000 4999', 'g 0 160000 4999']], },
-        #'zabbix-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 170000 4999', 'g 0 170000 4999']], },
-        #'logs-1' => { state => $master_container_state, autostart => $container_autostart, idmap => [['u 0 145000 4999', 'g 0 145000 4999']], },
-    }
-    create_resources(lxc, $lxcs, $lxc_defaults)
 
-    # Only define the interface of the lxcs on the master the slave is going to copy them as is
-    if $master {
-        $lxc_interface_defaults = {
-            device_name  => 'eth0',
-            ipv4_gateway => $bridge_ip,
-            ensure       => present,
-            index        => 0,
-            link         => $lxc_bridge,
-            type         => 'veth',
-            restart      => true,
+    $::lxcs.each |$key, $value| {
+        # Run the containers on the master except a few that only run on the slave
+        $master_container_state = ($master and $value['on_master']) ? {
+            true    => 'running',
+            false   => 'stopped',
+            default => 'stopped',
         }
-        $lxc_interfaces = {
-            'db-1' => { container => 'db-1', ipv4 => ['10.1.1.10/24'], },
-            'db-2' => { container => 'db-2', ipv4 => ['10.1.1.11/24'], },
-            'web-1' => { container => 'web-1', ipv4 => ['10.1.1.20/24'], },
-            'web-2' => { container => 'web-2', ipv4 => ['10.1.1.21/24'], },
-            'adman' => { container => 'adman', ipv4 => ['10.1.1.30/24'], },
-            'queue-1' => { container => 'queue-1', ipv4 => ['10.1.1.40/24'], },
-            'search-1' => { container => 'search-1', ipv4 => ['10.1.1.50/24'], },
-            'live-1' => { container => 'live-1', ipv4 => ['10.1.1.60/24'], },
-            #'logs-1' => { container => 'logs-1', ipv4 => ['10.1.1.70/24'], },
-            'redis-1' => { container => 'redis-1', ipv4 => ['10.1.1.80/24'], },
-            'dns-1' => { container => 'dns-1', ipv4 => ['10.1.1.90/24'], },
-            'vpn-1'  => { container => 'vpn-1', ipv4 => ['10.1.1.100/24'], },
-            'mail-1' => { container => 'mail-1', ipv4 => ['10.1.1.110/24'], },
-            'nginx-1' => { container => 'nginx-1', ipv4 => ['10.1.1.120/24'], },
-            # 'zabbix-1' => { container => 'redis-1', type => 'none' }, # On the host namespace
+        if ($master and $value['on_master']) or !$master and !$value['on_master'] {
+            $container_autostart = true
+        } else {
+            $container_autostart = false
         }
-        create_resources(lxc_interface, $lxc_interfaces, $lxc_interface_defaults)
+        $subuid = $subuid_start + $value['subuid_order'] * $subuid_step
+        $subuid_end = $subuid_step - 1
+        # TODO figure out why a double array is required
+        $idmap = [[
+            "u 0 ${subuid} ${subuid_end}",
+            "g 0 ${subuid} ${subuid_end}",
+        ]]
+        $lxc = {
+            $key => {
+                state     => $master_container_state,
+                autostart => $container_autostart,
+                idmap     => $idmap,
+            }
+        }
+        $lxc_interface = {
+            $key => {
+                container => $key,
+                ipv4      => ["${value['ipv4']}/${bridge_netmask}"],
+            }
+        }
+        create_resources(lxc, $lxc, $lxc_defaults)
+        # Only define the interface of the lxcs on the respective host
+        if ($master and $value['on_master']) or !$master and !$value['on_master'] {
+            create_resources(lxc_interface, $lxc_interface, $lxc_interface_defaults)
+        }
     }
 
     # To be excluded because they are started on the slave
@@ -215,7 +204,7 @@ class role::lxc (
             gid  => 0,
         }
     } elsif $rsync_master {
-        $t = $lxcs.filter |$k, $v| { $v['state'] == 'running' }
+        $t = $::lxcs.filter |$k, $v| { !$v['on_master'] }
         $excluded = $t.map |$k, $v| { "${lxc_path}/${k}" }
         rsync::get { 'lxc':
             source  => "rsync://${rsync_master}/lxc/",
