@@ -24,6 +24,8 @@ Vagrant.configure("2") do |config|
       end
       config.vm.provider "virtualbox" do |v|
         v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
+        v.memory = 8192
+        v.cpus = 4
       end
   end
   (1..2).each do |i|
