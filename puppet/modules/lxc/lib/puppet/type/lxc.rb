@@ -103,15 +103,6 @@ Puppet::Type.newtype(:lxc) do
     end
   end
 
-  newproperty(:idmap) do
-    desc 'A multi-value key (can be used multiple times) to add idmap rules for unprivileged namespaces'
-    validate do |value|
-      unless value.kind_of?Array
-        raise ArgumentError, "idmap is #{value.class}, expected Array"
-      end
-    end
-  end
-
   autorequire(:package) do
     ['lxc-bindings']
   end
