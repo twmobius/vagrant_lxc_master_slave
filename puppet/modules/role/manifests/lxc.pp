@@ -35,37 +35,37 @@ class role::lxc (
         ensure => true,
     }
 
-    firehol::variable { 'FIREHOL_ENABLE_SPINNER': 
+    firehol::variable { 'FIREHOL_ENABLE_SPINNER':
       variable => 'FIREHOL_ENABLE_SPINNER',
       value    => '1'
     }
 
-    firehol::variable { 'FIREHOL_FAST_ACTIVATION': 
+    firehol::variable { 'FIREHOL_FAST_ACTIVATION':
       variable => 'FIREHOL_FAST_ACTIVATION',
       value    => '1'
     }
 
-    firehol::variable { 'FIREHOL_LOG_MODE': 
+    firehol::variable { 'FIREHOL_LOG_MODE':
       variable => 'FIREHOL_LOG_MODE',
       value    => 'NFLOG'
     }
 
-    firehol::variable { 'FIREHOL_LOG_FREQUENCY': 
+    firehol::variable { 'FIREHOL_LOG_FREQUENCY':
       variable => 'FIREHOL_LOG_FREQUENCY',
       value    => '10/second'
     }
 
-    firehol::variable { 'FIREHOL_LOG_BURST': 
+    firehol::variable { 'FIREHOL_LOG_BURST':
       variable => 'FIREHOL_LOG_BURST',
       value    => '60'
     }
 
-    firehol::variable { 'DEFAULT_CLIENT_PORTS': 
+    firehol::variable { 'DEFAULT_CLIENT_PORTS':
       variable => 'DEFAULT_CLIENT_PORTS',
       value    => '0:65535'
     }
 
-    firehol::variable { 'FIREHOL_DROP_ORPHAN_TCP_ACK_FIN': 
+    firehol::variable { 'FIREHOL_DROP_ORPHAN_TCP_ACK_FIN':
       variable => 'FIREHOL_DROP_ORPHAN_TCP_ACK_FIN',
       value    => '1'
     }
@@ -100,9 +100,7 @@ class role::lxc (
         matches   => 'proto tcp dport "20 21"',
     }
 
-    firehol::ipv6 { 'ipv6': 
-
-    }
+    firehol::ipv6 { 'ipv6': }
 
     firehol::interface { $public_interface: interface_name => 'public', }
 
