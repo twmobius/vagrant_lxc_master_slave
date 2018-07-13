@@ -104,11 +104,6 @@ class role::lxc (
 
     firehol::interface { $lxc_bridge: interface_name => 'private', }
 
-    firehol::router { 'lxc_router':
-        inface  => $lxc_bridge,
-        outface => $public_interface,
-    }
-
     firehol::service { 'sshalt': server => 'tcp/2222', }
 
     firehol::rule { 'public-server':
@@ -135,18 +130,30 @@ class role::lxc (
         service   => 'all',
     }
 
-    firehol::router_rule { 'masquerade':
-        router    => 'lxc_router',
+    firehol::router { 'net-to-lxc':
+        inface => $public_interface,
+        outface  => $lxc_bridge,
+    }
+
+    firehol::router_rule { 'ntl-masquerade':
+        router    => 'net-to-lxc',
         direction => '',
-        action    => 'masquerade',
+        action    => 'masquerade reverse',
         service   => '',
     }
 
-    firehol::router_rule { 'route_all':
-        router    => 'lxc_router',
-        direction => 'route',
-        action    => 'accept',
+    firehol::router_rule { 'ntl-server':
+        router    => 'net-to-lxc',
+        direction => 'server',
+        service   => ['openvpn'],
+        action    => 'accept'
+    }
+
+    firehol::router_rule { 'ntl-client':
+        router    => 'net-to-lxc',
+        direction => 'client',
         service   => 'all',
+        action    => 'accept'
     }
 
     if $rsync_allow {
