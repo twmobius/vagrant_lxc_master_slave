@@ -114,7 +114,7 @@ class role::lxc (
     firehol::rule { 'public-server':
         interface => $public_interface,
         direction => 'server',
-        service   => ['icmp', 'smtp', 'smtps', 'imap', 'imaps', 'sshalt', 'http', 'https', 'openvpn', 'ftp'],
+        service   => ['icmp', 'smtp', 'ssh', 'smtps', 'imap', 'imaps', 'sshalt', 'http', 'https', 'openvpn', 'ftp'],
     }
 
     firehol::rule { 'public-client':
