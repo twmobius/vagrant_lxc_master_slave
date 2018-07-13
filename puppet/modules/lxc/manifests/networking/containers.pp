@@ -20,6 +20,7 @@ class lxc::networking::containers inherits lxc::params {
   }
 
   $local_lxc_networking_extra_options = $lxc::lxc_networking_extra_options
+  $local_lxc_idmap = $lxc::lxc_idmap
 
   file { $lxc::params::network_default_conf:
     ensure  => present,

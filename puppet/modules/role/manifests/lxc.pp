@@ -171,6 +171,10 @@ class role::lxc (
         lxc_networking_nat_enable     => false,
         lxc_cgmanager_service_ensure  => false,
         lxc_cgmanager_service_enabled => false,
+        lxc_idmap                     => [
+            'u 0 100000 65536',
+            'g 0 100000 65536',
+        ],
         require                       => Class['netplan'],
     }
 

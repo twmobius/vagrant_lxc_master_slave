@@ -7,3 +7,8 @@ lxc.net.0.hwaddr = <%= scope['lxc::lxc_networking_hwaddr'] %>
 <%= k -%> = <%= v %>
 <% end -%>
 <% end -%>
+<% if @local_lxc_idmap -%>
+<% @local_lxc_idmap.each do |v| -%>
+lxc.idmap = <%= v %>
+<% end -%>
+<% end -%>

@@ -126,7 +126,8 @@ class lxc (
   $lxc_networking_nat_dhcp_conf      = undef,
   $lxc_networking_nat_dhcp_options   = undef,
   $lxc_networking_nat_update_dnsmasq = $lxc::params::lxc_networking_nat_update_dnsmasq,
-  $lxc_networking_nat_dnsmasq_conf   = $lxc::params::lxc_networking_nat_dnsmasq_conf
+  $lxc_networking_nat_dnsmasq_conf   = $lxc::params::lxc_networking_nat_dnsmasq_conf,
+  $lxc_idmap                         = undef,
 ) inherits lxc::params {
 
   contain 'lxc::install'
