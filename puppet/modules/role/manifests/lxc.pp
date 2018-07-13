@@ -100,6 +100,10 @@ class role::lxc (
         matches   => 'proto tcp dport "20 21"',
     }
 
+    firehol::ipv6 { 'ipv6': 
+
+    }
+
     firehol::interface { $public_interface: interface_name => 'public', }
 
     firehol::interface { $lxc_bridge: interface_name => 'private', }
