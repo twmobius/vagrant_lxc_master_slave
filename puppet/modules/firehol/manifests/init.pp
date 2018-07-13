@@ -24,7 +24,7 @@ class firehol (
     require => Package['firehol'],
     target  => $config_file,
     content => template('firehol/firehol_header.erb'),
-    order   => '01',
+    order   => '00',
   }
 
   file { '/etc/default/firehol':

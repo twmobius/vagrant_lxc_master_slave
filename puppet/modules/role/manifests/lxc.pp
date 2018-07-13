@@ -34,72 +34,118 @@ class role::lxc (
     class { 'firehol':
         ensure => true,
     }
+
+    firehol::variable { 'FIREHOL_ENABLE_SPINNER': 
+      variable => 'FIREHOL_ENABLE_SPINNER',
+      value    => '1'
+    }
+
+    firehol::variable { 'FIREHOL_FAST_ACTIVATION': 
+      variable => 'FIREHOL_FAST_ACTIVATION',
+      value    => '1'
+    }
+
+    firehol::variable { 'FIREHOL_LOG_MODE': 
+      variable => 'FIREHOL_LOG_MODE',
+      value    => 'NFLOG'
+    }
+
+    firehol::variable { 'FIREHOL_LOG_FREQUENCY': 
+      variable => 'FIREHOL_LOG_FREQUENCY',
+      value    => '10/second'
+    }
+
+    firehol::variable { 'FIREHOL_LOG_BURST': 
+      variable => 'FIREHOL_LOG_BURST',
+      value    => '60'
+    }
+
+    firehol::variable { 'DEFAULT_CLIENT_PORTS': 
+      variable => 'DEFAULT_CLIENT_PORTS',
+      value    => '0:65535'
+    }
+
+    firehol::variable { 'FIREHOL_DROP_ORPHAN_TCP_ACK_FIN': 
+      variable => 'FIREHOL_DROP_ORPHAN_TCP_ACK_FIN',
+      value    => '1'
+    }
+
     firehol::dnat4 { 'http':
         interface => $public_interface,
         backend   => '10.1.1.20',
         matches   => 'proto tcp dport "80 443"',
     }
+
     firehol::dnat4 { 'vpn-tcp':
         interface => $public_interface,
         backend   => '10.1.1.100',
         matches   => 'proto tcp dport 1194',
     }
+
     firehol::dnat4 { 'vpn-udp':
         interface => $public_interface,
         backend   => '10.1.1.100',
         matches   => 'proto udp dport 1194',
     }
+
     firehol::dnat4 { 'mail':
         interface => $public_interface,
         backend   => '10.1.1.110',
         matches   => 'proto tcp dport "25 465 110 143 993 995 587"',
     }
+
     firehol::dnat4 { 'ftp':
         interface => $public_interface,
         backend   => '10.1.1.20',
         matches   => 'proto tcp dport "20 21"',
     }
+
+    firehol::ipv6 { 'ipv6': 
+
+    }
+
     firehol::interface { $public_interface: interface_name => 'public', }
+
     firehol::interface { $lxc_bridge: interface_name => 'private', }
+
     firehol::router { 'lxc_router':
         inface  => $lxc_bridge,
         outface => $public_interface,
     }
-    firehol::service { 'ssh': server => 'tcp/22,2222', }
-    firehol::service { 'mysql': server => 'tcp/3306', }
-    firehol::service { 'mail': server => 'tcp/25,465,110,143,993,995', }
-    firehol::service { 'web': server => 'tcp/80,443', }
-    firehol::service { 'dns': server => 'tcp/53,udp/53', }
-    firehol::service { 'openvpn': server => 'tcp/1194,udp/1194', }
-    firehol::service { 'ftp': server => 'tcp/20,21', }
-    firehol::service { 'rsync': server => 'tcp/873', }
+
+    firehol::service { 'sshalt': server => 'tcp/2222', }
 
     firehol::rule { 'public-server':
         interface => $public_interface,
         direction => 'server',
-        service   => ['icmp', 'mail', 'ssh', 'web', 'openvpn', 'ftp'],
+        service   => ['icmp', 'smtp', 'smtps', 'imap', 'imaps', 'sshalt', 'http', 'https', 'openvpn', 'ftp'],
     }
+
     firehol::rule { 'public-client':
         interface => $public_interface,
         direction => 'client',
         service   => 'all',
     }
+
     firehol::rule { 'bridge-server':
         interface => $lxc_bridge,
         direction => 'server',
-        service   => ['icmp', 'mail', 'ssh', 'web'],
+        service   => ['icmp', 'sshalt', 'http', 'https'],
     }
+
     firehol::rule { 'bridge-client':
         interface => $lxc_bridge,
         direction => 'client',
         service   => 'all',
     }
+
     firehol::router_rule { 'masquerade':
         router    => 'lxc_router',
         direction => '',
         action    => 'masquerade',
         service   => '',
     }
+
     firehol::router_rule { 'route_all':
         router    => 'lxc_router',
         direction => 'route',
@@ -116,11 +162,12 @@ class role::lxc (
         }
     }
 
-
     class { 'rsync::server':
         use_xinetd => false,
     }
+
     # LXC configuration, dependent on master/slave
+
     class { 'lxc':
         lxc_networking_device_link    => $lxc_bridge,
         lxc_networking_type           => 'veth',
@@ -146,6 +193,7 @@ class role::lxc (
         ],
         storage_backend => 'dir',
     }
+
     $lxc_interface_defaults = {
         device_name  => 'eth0',
         ensure       => present,
