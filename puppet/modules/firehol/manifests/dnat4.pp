@@ -14,6 +14,6 @@ define firehol::dnat4 (
   concat::fragment { "dnat4_${title}":
     target  => $config_file,
     content => template('firehol/firehol_dnat4.erb'),
-    order   => '00',
+    order   => '02',
   }
 }
