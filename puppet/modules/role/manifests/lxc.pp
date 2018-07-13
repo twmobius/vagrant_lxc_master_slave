@@ -9,8 +9,6 @@ class role::lxc (
     $master = false,
     $rsync_master = undef,
     $rsync_allow = undef,
-    $subuid_step = 2000,
-    $subuid_start = 100000,
 ){
 
     # Network configuration
@@ -214,18 +212,10 @@ class role::lxc (
         } else {
             $container_autostart = false
         }
-        $subuid = $subuid_start + $value['subuid_order'] * $subuid_step
-        $subuid_end = $subuid_step - 1
-        # TODO figure out why a double array is required
-        $idmap = [[
-            "u 0 ${subuid} ${subuid_end}",
-            "g 0 ${subuid} ${subuid_end}",
-        ]]
         $lxc = {
             $key => {
                 state     => $master_container_state,
                 autostart => $container_autostart,
-                idmap     => $idmap,
             }
         }
         $lxc_interface = {
@@ -235,14 +225,6 @@ class role::lxc (
             }
         }
         create_resources(lxc, $lxc, $lxc_defaults)
-        file { "${lxc_path}/${key}/rootfs":
-            ensure  => directory,
-            owner   => $subuid,
-            group   => $subuid,
-            recurse => true,
-            ignore  => 'dev',
-            require => Lxc[$key],
-        }
         # Only define the interface of the lxcs on the respective host
         if ($master and $value['on_master']) or !$master and !$value['on_master'] {
             create_resources(lxc_interface, $lxc_interface, $lxc_interface_defaults)
