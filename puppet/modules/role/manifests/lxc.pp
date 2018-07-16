@@ -142,10 +142,53 @@ class role::lxc (
         service   => '',
     }
 
-    firehol::router_rule { 'ntl-server':
+    firehol::router_rule { 'ntl-server-openvpn':
         router    => 'net-to-lxc',
         direction => 'server',
         service   => ['openvpn'],
+        action    => 'accept'
+    }
+
+
+    firehol::router_rule { 'ntl-server-smtp':
+        router    => 'net-to-lxc',
+        direction => 'server',
+        service   => ['smtp'],
+        action    => 'accept'
+    }
+
+    firehol::router_rule { 'ntl-server-smtps':
+        router    => 'net-to-lxc',
+        direction => 'server',
+        service   => ['smtps'],
+        action    => 'accept'
+    }
+
+    firehol::router_rule { 'ntl-server-imap':
+        router    => 'net-to-lxc',
+        direction => 'server',
+        service   => ['imap'],
+        action    => 'accept'
+    }
+
+    firehol::router_rule { 'ntl-server-imaps':
+        router    => 'net-to-lxc',
+        direction => 'server',
+        service   => ['imaps'],
+        action    => 'accept'
+    }
+
+    firehol::router_rule { 'ntl-server-http':
+        router    => 'net-to-lxc',
+        direction => 'server',
+        service   => ['http'],
+        action    => 'accept'
+    }
+
+    firehol::router_rule { 'ntl-server-https':
+        router    => 'net-to-lxc',
+        direction => 'server',
+        service   => ['https'],
         action    => 'accept'
     }
 
