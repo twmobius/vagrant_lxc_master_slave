@@ -192,6 +192,13 @@ class role::lxc (
         action    => 'accept'
     }
 
+    firehol::router_rule { 'ntl-server-submission':
+        router    => 'net-to-lxc',
+        direction => 'server',
+        service   => ['submission'],
+        action    => 'accept'
+    }
+
     firehol::router_rule { 'ntl-client':
         router    => 'net-to-lxc',
         direction => 'client',
