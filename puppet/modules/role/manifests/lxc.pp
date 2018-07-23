@@ -70,7 +70,7 @@ class role::lxc (
 
     firehol::dnat4 { 'http':
         interface => $public_interface,
-        backend   => '10.1.1.20',
+        backend   => '10.1.1.120',
         matches   => 'proto tcp dport "80 443"',
     }
 
@@ -196,6 +196,13 @@ class role::lxc (
         router    => 'net-to-lxc',
         direction => 'server',
         service   => ['submission'],
+        action    => 'accept'
+    }
+
+    firehol::router_rule { 'ntl-server-ftp':
+        router    => 'net-to-lxc',
+        direction => 'server',
+        service   => ['ftp'],
         action    => 'accept'
     }
 
