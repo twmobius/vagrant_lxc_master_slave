@@ -77,13 +77,13 @@ class role::lxc (
     firehol::dnat4 { 'vpn-tcp':
         interface => $public_interface,
         backend   => '10.1.1.100',
-        matches   => 'proto tcp dport 1194',
+        matches   => 'proto tcp dport "1194 1195"',
     }
 
     firehol::dnat4 { 'vpn-udp':
         interface => $public_interface,
         backend   => '10.1.1.100',
-        matches   => 'proto udp dport 1194',
+        matches   => 'proto udp dport "1194 1195"',
     }
 
     firehol::dnat4 { 'mail':
@@ -98,6 +98,19 @@ class role::lxc (
         matches   => 'proto tcp dport "20 21"',
     }
 
+    # snat4 to 195.201.55.24 src 10.1.1.110
+    # snat4 to 195.201.55.24 src 10.1.1.120
+
+    firehol::snat4 { 'mail':
+      to  => '195.201.55.24',
+      src => '10.1.1.110' 
+    }
+
+    firehol::snat4 { 'http':
+      to  => '195.201.55.24',
+      src => '10.1.1.120' 
+    }
+
     firehol::ipv6 { 'ipv6': }
 
     firehol::interface { $public_interface: interface_name => 'public', }
@@ -106,10 +119,14 @@ class role::lxc (
 
     firehol::service { 'sshalt': server => 'tcp/2222', }
 
+    firehol::service { 'externalvpn': server => 'tcp/1195', }
+
+    firehol::service { 'netdata': server => 'tcp/19999', }
+
     firehol::rule { 'public-server':
         interface => $public_interface,
         direction => 'server',
-        service   => ['icmp', 'smtp', 'ssh', 'smtps', 'imap', 'imaps', 'sshalt', 'http', 'https', 'openvpn', 'ftp'],
+        service   => ['icmp', 'smtp', 'ssh', 'smtps', 'imap', 'imaps', 'sshalt', 'http', 'https', 'openvpn', 'ftp', 'externalvpn'],
     }
 
     firehol::rule { 'public-client':
@@ -121,7 +138,7 @@ class role::lxc (
     firehol::rule { 'bridge-server':
         interface => $lxc_bridge,
         direction => 'server',
-        service   => ['icmp', 'sshalt', 'http', 'https'],
+        service   => ['icmp', 'sshalt', 'http', 'https', 'netdata'],
     }
 
     firehol::rule { 'bridge-client':
@@ -145,7 +162,7 @@ class role::lxc (
     firehol::router_rule { 'ntl-server-openvpn':
         router    => 'net-to-lxc',
         direction => 'server',
-        service   => ['openvpn'],
+        service   => ['openvpn', 'externalvpn'],
         action    => 'accept'
     }
 
@@ -203,6 +220,13 @@ class role::lxc (
         router    => 'net-to-lxc',
         direction => 'server',
         service   => ['ftp'],
+        action    => 'accept'
+    }
+
+    firehol::router_rule { 'ntl-server-dns':
+        router    => 'net-to-lxc',
+        direction => 'server',
+        service   => ['dns'],
         action    => 'accept'
     }
 
