@@ -32,11 +32,13 @@ $lxcs = {
     'queue-1'   => { ipv4 => '10.1.1.40',  on_master => true },
     'search-1'  => { ipv4 => '10.1.1.50',  on_master => true },
     'live-1'    => { ipv4 => '10.1.1.60',  on_master => true },
-  # 'logs-1'    => { ipv4 => '10.1.1.70',  on_master => true },
+    'logs-1'    => { ipv4 => '10.1.1.70',  on_master => false },
     'redis-1'   => { ipv4 => '10.1.1.80',  on_master => true },
     'dns-1'     => { ipv4 => '10.1.1.90',  on_master => true },
     'vpn-1'     => { ipv4 => '10.1.1.100', on_master => true },
     'mail-1'    => { ipv4 => '10.1.1.110', on_master => true },
     'nginx-1'   => { ipv4 => '10.1.1.120', on_master => true },
   # 'zabbix-1'  => { ipv4 => '10.1.1.130', on_master => true },
+    'ai-1'          => { ipv4 => '10.1.1.140', on_master => false },
+    'workspaces-1'  => { ipv4 => '10.1.1.150', on_master => false }
 }
