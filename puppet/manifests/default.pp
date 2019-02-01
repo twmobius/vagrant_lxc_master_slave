@@ -40,5 +40,6 @@ $lxcs = {
     'nginx-1'   => { ipv4 => '10.1.1.120', on_master => true },
   # 'zabbix-1'  => { ipv4 => '10.1.1.130', on_master => true },
     'ai-1'          => { ipv4 => '10.1.1.140', on_master => false },
-    'workspaces-1'  => { ipv4 => '10.1.1.150', on_master => false }
+    'workspaces-1'  => { ipv4 => '10.1.1.150', on_master => false },
+    'analytics'     => { ipv4 => '10.1.1.160', on_master => false }
 }
