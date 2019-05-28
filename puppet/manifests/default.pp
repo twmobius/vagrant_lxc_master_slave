@@ -42,5 +42,5 @@ $lxcs = {
     'ai-1'          => { ipv4 => '10.1.1.140', on_master => false },
     'workspaces-1'  => { ipv4 => '10.1.1.150', on_master => false },
     'analytics'     => { ipv4 => '10.1.1.160', on_master => false },
-    'notifications-1'     => { ipv4 => '10.1.1.170', on_master => false }
+    'contact-1'     => { ipv4 => '10.1.1.170', on_master => false }
 }
